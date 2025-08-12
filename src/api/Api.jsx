@@ -11,3 +11,11 @@ export const getApiData = (pageNumber) => {
 export const getIndvApiData = (id) => {
   return api.get(`/posts/${id}`);
 };
+
+export const deletePost = (id) => {
+  return api.delete(`/posts/${id}`);
+};
+
+export const UpdatePost = ({ id, title, body }) => {
+  return api.patch(`/posts/${id}`, { title, body });
+};
