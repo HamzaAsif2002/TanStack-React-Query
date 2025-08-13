@@ -19,3 +19,7 @@ export const deletePost = (id) => {
 export const UpdatePost = ({ id, title, body }) => {
   return api.patch(`/posts/${id}`, { title, body });
 };
+
+export const AddPost = (name) => {
+  return api.post("/posts", name);
+};

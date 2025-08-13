@@ -4,7 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { deletePost, getApiData, UpdatePost } from "../api/Api";
+import { AddPost, deletePost, getApiData, UpdatePost } from "../api/Api";
 import { NavLink } from "react-router";
 import { useState } from "react";
 
@@ -73,16 +73,38 @@ export const UsingRQ = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (inputData.id !== null) {
+    if (isAdd === false) {
       updateMutation.mutate(inputData);
+      setIsAdd(true);
     } else {
+      addMutation.mutate(inputData);
       console.log("Add post:", inputData);
     }
   };
 
   const handleUpdateButton = (id, body, title) => {
     setInputData({ title, body, id });
+    setIsAdd(false);
   };
+
+  //Add posts.
+  const [isAdd, setIsAdd] = useState(true);
+  const addMutation = useMutation({
+    mutationFn: (inputData) => AddPost(inputData),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(["posts", pageNumber], (curElem) => {
+        // Ensure curElem is an array
+        if (!curElem) return [data];
+        return [variables, ...curElem]; // Add new post at the top
+      });
+
+      setInputData({
+        title: "",
+        body: "",
+        id: null,
+      });
+    },
+  });
 
   //handle error and loading
   if (isPending) return <h1>Loading......</h1>;
@@ -119,7 +141,7 @@ export const UsingRQ = () => {
           type="submit"
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-md transition"
         >
-          Add
+          {isAdd ? "Add" : "Edit"}
         </button>
       </form>
 
